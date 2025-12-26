@@ -1,0 +1,275 @@
+% ============================================================
+% PA-18 CHECKLIST (2 pages, duplex): BEFORE FLIGHT + BEFORE TAKEOFF
+% ============================================================
+% Compile with: pdflatex
+%
+% Notes (conceptual):
+% - The layout is made with TWO COLUMNS per page (multicol package).
+% - Each checklist block is a "table" with three columns:
+%     (1) ITEM (left), (2) dotted leader (middle), (3) ACTION (right)
+% - We avoid tabularx here because it can be fragile when wrapped in custom
+%   environments; regular tabular is stable and predictable for this use.
+% - If you see a literal "&" in text, it MUST be written as "\&" (LaTeX rule).
+% ============================================================
+
+\documentclass[10pt,a4paper,twoside]{article} % twoside helps duplex printing conventions
+
+% ------------------------------------------------------------
+% PAGE SIZE + MARGINS
+% ------------------------------------------------------------
+% A4 paper, larger margins so the content sits centered and you can trim after printing.
+% If you want even more white border: increase margin (e.g., 20mm, 22mm).
+\usepackage[a4paper,margin=33mm]{geometry}
+
+% ------------------------------------------------------------
+% FONT + ENCODING
+% ------------------------------------------------------------
+\usepackage[T1]{fontenc}   % proper font encoding (hyphenation/accents)
+\usepackage[utf8]{inputenc}% allow UTF-8 in source (ok for pdflatex)
+\usepackage{helvet}        % Helvetica-like font
+\renewcommand{\familydefault}{\sfdefault} % make sans-serif the default (matches checklist style)
+
+% ------------------------------------------------------------
+% GENERAL TYPOGRAPHY / LAYOUT PACKAGES
+% ------------------------------------------------------------
+\usepackage{microtype} % subtle spacing improvements
+\usepackage{multicol}  % two-column layout
+\usepackage{array}     % custom column types for tabular
+\usepackage{xcolor}    % colors (used for header and optional text)
+\usepackage{tcolorbox} % black header bars
+
+% ------------------------------------------------------------
+% GLOBAL DOCUMENT STYLING
+% ------------------------------------------------------------
+\pagestyle{empty}        % no page numbers / headers / footers (clean checklist page)
+\setlength{\parindent}{0pt} % no paragraph indent
+\setlength{\parskip}{2pt}   % small vertical spacing between paragraphs/blocks
+
+% Controls spacing inside tables:
+\renewcommand{\arraystretch}{1.1} % row height multiplier; increase if you want more air
+\setlength{\tabcolsep}{0pt}        % removes horizontal padding in table columns
+
+% Controls spacing between the two columns on each page:
+\setlength{\columnsep}{12mm}       % gap between left and right column; increase/decrease as desired
+
+% ------------------------------------------------------------
+% CHECKLIST TABLE DEFINITION (3 columns)
+% ------------------------------------------------------------
+% IMPORTANT (technical):
+% - \newcolumntype takes a SINGLE LETTER name. We use Q, D, Z.
+% - Each p{...} is a fixed-width column; widths are relative to the CURRENT column width (\linewidth).
+%
+% Column widths (edit these if you want the dots/action aligned differently):
+% - Q (item):   64% of column width
+% - D (dots):   12% of column width
+% - Z (action): 24% of column width
+%
+% The three should sum to 1.00\linewidth (0.64 + 0.12 + 0.24 = 1.00).
+\newcolumntype{Q}{>{\raggedright\arraybackslash}p{0.64\linewidth}} % ITEM text, left-aligned
+\newcolumntype{D}{>{\centering\arraybackslash}p{0.12\linewidth}}  % dots column, centered
+\newcolumntype{Z}{>{\raggedleft\arraybackslash}p{0.24\linewidth}} % ACTION text, right-aligned
+
+% Environment that starts/ends the table with our three columns.
+% @{} removes extra left/right padding at table edges.
+\newenvironment{checklist}{%
+  \begin{tabular}{@{}QDZ@{}}%
+}{%
+  \end{tabular}%
+}
+
+% One checklist row:
+% - #1 = item text (left)
+% - #2 = action text (right)
+% \dotfill prints a dotted line that stretches in the middle column.
+% [-1pt] slightly tightens the row spacing; remove it if you want more vertical space.
+\newcommand{\itemline}[2]{%
+  \textbf{\MakeUppercase{#1}} & \dotfill & \textbf{\MakeUppercase{#2}}\\[-1pt]%
+}
+
+% ------------------------------------------------------------
+% HEADERS / TITLES
+% ------------------------------------------------------------
+% Usage:
+%   \hdr{TITLE}         -> normal header with default top spacing
+%   \hdr[0pt]{TITLE}    -> header with no extra top spacing (use at top of a column/block)
+%
+% Everything is uppercased for consistent look (same as your current setup).
+\newcommand{\hdr}[2][5pt]{%
+  \vspace{#1}%
+  {\fontsize{10.3}{11.2}\selectfont\bfseries\MakeUppercase{#2}}\par
+  \vspace{2pt}\hrule height 0.4pt\vspace{6pt}%
+}
+
+% Page header bar (black band at top with left/right titles):
+% - #1: left title
+% - #2: right title
+% You can change the font size here independently of body text.
+\newcommand{\pagehdr}[2]{%
+  \begin{tcolorbox}[
+    colback=black,     % black background
+    colframe=black,    % black border (irrelevant because boxrule=0)
+    boxrule=0pt,       % no border line
+    arc=0pt,           % square corners (like printed checklists)
+    left=6pt,right=6pt,top=4pt,bottom=4pt,
+    width=\linewidth   % full text width
+  ]
+    {\color{white}\fontsize{11.2}{12.4}\selectfont\bfseries\MakeUppercase{#1}}\hfill
+    {\color{white}\fontsize{11.2}{12.4}\selectfont\bfseries\MakeUppercase{#2}}
+  \end{tcolorbox}
+  \vspace{6pt} % spacing after the black bar
+}
+
+% ============================================================
+% DOCUMENT START
+% ============================================================
+\begin{document}
+
+% Body font size for all checklist lines (items/actions).
+% Titles use their own font sizes defined in \pagehdr, \subhdr, \sectionhdr.
+\fontsize{7.5}{10.4}\selectfont
+
+% ============================================================
+% PAGE 1 — BEFORE FLIGHT
+% ============================================================
+\pagehdr{BEFORE FLIGHT (ON THE GROUND)}{PREFLIGHT OPERATIONS}
+
+% Start two-column layout for this page.
+\begin{multicols}{2}
+
+% COCKPIT block title + underline (only column width)
+\hdr{COCKPIT (Read \& Do)}
+
+% COCKPIT checklist block
+\begin{checklist}
+  \itemline{Cowl Plugs}{Removed}
+  \itemline{AFM/POH}{Checked}
+  \itemline{Discrepancy Record}{Checked}
+  \itemline{Certificates}{Checked}
+  \itemline{Fuel Quantity}{Checked}
+  \itemline{Hobbs/Tach}{Checked}
+  \itemline{Control Lock (Seat Belt)}{Removed}
+  \itemline{Wing Flaps}{Full}
+  \itemline{Fuel Selector Valve}{Both}
+  \itemline{Circuit Breakers}{In}
+  \itemline{Throttle/Mixture}{Idle / ICO}
+  \itemline{Carburetor Heat}{Off}
+  \itemline{Ignition Switch}{Off}
+  \itemline{Avionics}{Off}
+  \itemline{Position Lights}{On}
+  \itemline{Propeller Area}{Clear}
+  \itemline{Master Switch}{On}
+  \itemline{Exterior Lights}{Checked}
+  \itemline{Master Switch}{Off}
+  \itemline{Fuel Sump Valves (3)}{Sample}
+\end{checklist}
+
+% NOSE section + its checklist
+\hdr{NOSE (Read \& Do)}
+\begin{checklist}
+  \itemline{Fresh Air Inlet}{Checked}
+  \itemline{Engine Compartment}{Checked}
+  \itemline{Engine Oil}{5--6 QTS}
+  \itemline{Propeller \& Spinner}{Checked} % \& is required (because & is a table separator)
+  \itemline{Alternator Belt}{Checked}
+  \itemline{Intake Air Filter}{Checked}
+  \itemline{Transponder Antenna}{Checked}
+  \itemline{VHF Com Ant}{Checked}
+  \itemline{Landing Gear Struts}{Checked}
+\end{checklist}
+
+% Force the next content to start at the TOP of the RIGHT column.
+% This is how we ensure LEFT WING header appears in the right column.
+\columnbreak
+
+% LEFT WING section + checklist (now starts in right column)
+\hdr{LEFT WING (Read \& Do)}
+\begin{checklist}
+  \itemline{Left Wheel Tire}{Checked}
+  \itemline{Left Disc Brake}{Checked}
+  \itemline{Fuel Quantity \& Cap}{Checked}
+  \itemline{Fuel Tank Vent Tube}{FWD / Checked}
+  \itemline{Pitot/Static Tube}{Checked}
+  \itemline{Wing Tie-down Rope}{Checked}
+  \itemline{Aileron Pulley}{Checked}
+  \itemline{Wing Leading Edge}{Checked}
+  \itemline{Wing Tip}{Checked}
+  \itemline{Aileron}{Checked}
+  \itemline{Wing Flap}{Checked}
+  \itemline{Inspection Plates}{Checked}
+\end{checklist}
+
+% TAIL section + checklist
+\hdr{TAIL (Read \& Do)}
+\begin{checklist}
+  \itemline{Left Side Fabric \& Exterior}{Checked}
+  \itemline{Vertical Stabilizer}{Checked}
+  \itemline{VHF Navigation Antennas}{Checked}
+  \itemline{Horizontal Stabilizer/Brace Wires}{Checked}
+  \itemline{Elevator Trim Jack Screw}{Checked}
+  \itemline{Tail Wheel Condition}{Checked}
+  \itemline{Tail Wheel Steering Chains}{Checked}
+  \itemline{Tail Wheel Position}{Forward}
+  \itemline{Rudder Cable Attach Points}{Checked}
+  \itemline{Rudder}{Checked}
+  \itemline{Right Side Fabric \& Exterior}{Checked}
+  \itemline{Inspection Plates}{Checked}
+\end{checklist}
+
+% RIGHT WING section + checklist
+\hdr{RIGHT WING (Read \& Do)}
+\begin{checklist}
+  \itemline{Right Wheel Tire}{Checked}
+  \itemline{Left Disc Brake}{Checked}
+  \itemline{Wing Flap}{Checked}
+  \itemline{Aileron}{Checked}
+  \itemline{Wing Tip}{Checked}
+  \itemline{Wing Leading Edge}{Checked}
+  \itemline{Wing Tie-down Rope}{Removed}
+  \itemline{Aileron Pulley}{Checked}
+  \itemline{Fuel Quantity \& Cap}{Checked}
+  \itemline{Fuel Tank Vent Tube}{FWD / Checked}
+  \itemline{Wheel Chocks}{Removed}
+  \itemline{Inspection Plates}{Checked}
+\end{checklist}
+
+% End two-column layout for page 1
+\end{multicols}
+
+% Explicit page break (start page 2)
+\newpage
+
+% ============================================================
+% PAGE 2 — BEFORE TAKEOFF
+% ============================================================
+\pagehdr{BEFORE TAKEOFF (AT THE RUNWAY)}{FINAL CHECKS}
+
+% Center the whole checklist in a fixed-width block (robust centering)
+\noindent\makebox[\textwidth][c]{%
+  \begin{minipage}{0.85\textwidth} % ajustá 0.80–0.90
+    \hdr{BEFORE TAKEOFF (Read \& Do)}
+    \begin{checklist}
+      \itemline{Brakes}{Hold}
+      \itemline{Flight Controls/Trim}{Checked}
+      \itemline{Mixture}{Rich}
+      \itemline{Throttle}{1800 RPM}
+      \itemline{Engine Instruments}{Normal}
+      \itemline{Carburetor Heat}{Checked}
+      \itemline{Magnetos (150/50)}{Checked}
+      \itemline{Alternator}{Checked}
+      \itemline{Vacuum}{Checked}
+      \itemline{Engine Idle}{Checked}
+      \itemline{Fuel Quantity}{Checked}
+      \itemline{Takeoff Brief}{Complete}
+      \itemline{Doors/Windows}{Secured}
+      \itemline{Wing Flaps}{Half}
+      \itemline{Radio Volume}{Max}
+      \itemline{Wind Indicator}{Checked}
+      \itemline{Compass/DG}{Checked}
+      \itemline{Transponder}{ALT}
+      \itemline{White Anti-collision Lights}{On}
+      \itemline{Landing Light}{On}
+      \itemline{Runway Markings}{Confirmed}
+    \end{checklist}
+  \end{minipage}%
+}
+\end{document}
